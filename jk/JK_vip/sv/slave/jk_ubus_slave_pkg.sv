@@ -12,5 +12,7 @@ package jk_ubus_slave_pkg;
   `include "jk_ubus_slave_agent.sv"
   `include "../jk_ubus_scoreboard.sv"
   `include "../jk_ubus_env.sv"
+  `include "../jk_ubus_virtual_sequencer.sv"
+  `include "../jk_ubus_virtual_sequence.sv"
   `include "jk_ubus_test_collection.sv"
 endpackage
