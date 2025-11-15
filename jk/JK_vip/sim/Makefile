@@ -1,6 +1,6 @@
 # Makefile for UVM Lab1
 
-test = jk_ubus_write_test
+test = jk_ubus_virtual_sequence_test
 program_path = ../sv
 slave_path = ../sv/slave
 master_path = ../sv/master
@@ -13,7 +13,7 @@ COMMON_FILES = ${common_path}/jk_ubus_common_pkg.sv
 
 MASTER_FILES = ${master_path}/jk_ubus_master_pkg.sv
 
-TEST_TOP = ${SLAVE_INTERFACE} ${MASTER_INTERFACE} ${COMMON_FILES} ${MASTER_FILES} ${SLAVE_FILES} ${PROGRAM_TOP}
+TEST_TOP = ${SLAVE_INTERFACE} ${MASTER_INTERFACE} ${COMMON_FILES} ${PROGRAM_TOP}
 log = simv.log
 verbosity = UVM_HIGH
 uvm_ver = uvm-1.2
@@ -27,7 +27,7 @@ trace =
 # Set default 64bit!
 CES64 = TRUE
 
-compile_switches = -sverilog -lca -debug_access+all+reverse -kdb +vcs+vcdpluson -timescale="1ns/100ps" -l comp.log -ntb_opts ${uvm_ver} +incdir+${program_path}+${master_path}+${slave_path}+${common_path} ${TEST_TOP} +define+${uvm_defines}+${defines} -q
+compile_switches = -sverilog -lca -debug_access+all+reverse -kdb +vcs+vcdpluson -timescale="1ns/100ps" -l comp.log -ntb_opts ${uvm_ver} +incdir+${program_path}+${master_path}+${slave_path}+${common_path} ${TEST_TOP} +define+${uvm_defines}+${defines} -q -cm line+cond+fsm+tgl+branch+assert -cm_dir simv.vdb
 runtime_switches = -l ${log} +UVM_TESTNAME=${test} +UVM_VERBOSITY=${verbosity} +UVM_COMPONENT_TRACE +${plus} +${trace} +${option}
 
 all: clean simv run
@@ -57,6 +57,10 @@ solution: nuke
 	cp ../../solutions/lab1/*.sv .
 
 original: copy
+
+cover:
+	urg -dir simv.vdb
+	urg -dir simv.vdb -format text
 
 copy: nuke
 

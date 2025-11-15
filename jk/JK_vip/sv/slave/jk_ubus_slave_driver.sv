@@ -25,7 +25,7 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     else if (rsp.write) begin
       drive_write_response(rsp);
       end
-      seq_item_port.item_done(rsp);
+      seq_item_port.item_done();
     end
   endtask : run_phase
 
@@ -36,25 +36,25 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     `uvm_info("SLV_DRV", "Processing READ transaction", UVM_LOW)
 
     for (int i = 0; i < data_beats; i++) begin
-        vif.wait_state <= 0;
-        vif.data <= rsp.data[i];
+        vif.cb.wait_state <= 0;
+        vif.data <= rsp.data[i]; 
         `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%p", rsp.data[i]), UVM_LOW)
-        @(posedge vif.clk);
+        @(vif.cb);
     end
     
-    vif.data <= 'z;
+    vif.data <= 'z; 
   endtask : drive_read_rsponse
 
   virtual protected task drive_write_response(jk_ubus_master_transfer rsp);
     `uvm_info("SLV_DRV", "Processing WRITE transaction", UVM_LOW)
 
     //WRITE 응답 신호 구동
-    vif.wait_state <= 0;
-    vif.error <= rsp.error;
-    @(posedge vif.clk);
+    vif.cb.wait_state <= 0;
+    vif.cb.error <= rsp.error;
+    @(vif.cb);
 
   //신호해제
-  vif.error <= 'z;
+  vif.cb.error <= 'z;
   endtask
   
   function automatic int unsigned size_to_beats(bit [1:0] size_value);

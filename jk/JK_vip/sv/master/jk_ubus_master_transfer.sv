@@ -15,12 +15,12 @@ class jk_ubus_master_transfer extends uvm_sequence_item;
  }
  constraint read_state{
 	(rw == 1'b0) -> read == 1;
-	(rw == 1'b1) -> read == 1;
+	(rw == 1'b1) -> read == 0;
  } 
 
  constraint write_state{
 	(rw == 1'b0) -> write == 0;
-	(rw == 1'b1) -> write == 0;
+	(rw == 1'b1) -> write == 1;
  }
  
  `uvm_object_utils_begin(jk_ubus_master_transfer)

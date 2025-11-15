@@ -8,8 +8,8 @@ interface jk_ubus_master_if();
  clocking cb @(posedge clk);
   default input #1ns output #1ns;
 	input error, wait_state;
-	output read, write, bip, addr, size;
-	//inout data;
+	output read, write, bip, addr, size, reset;
+    inout data; // inout data 유지
 endclocking 
 
 endinterface : jk_ubus_master_if

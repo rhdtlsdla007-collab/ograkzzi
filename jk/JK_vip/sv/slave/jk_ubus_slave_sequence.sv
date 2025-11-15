@@ -39,11 +39,11 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
                   req.addr, req.size, req.read, req.write, req.data[i]), UVM_MEDIUM)
         end
         if (req.read) begin
-          if (!m_mem.exists(req.addr + i)) begin
+         // if (!m_mem.exists(req.addr + i)) begin
             m_mem[req.addr + i] = $urandom_range(8'h10, 8'hFF);
             rsp.data[i] = m_mem[req.addr + i];
           `uvm_info("SLAVE_SEQ", $sformatf("SEQ_rsp.data = %p", rsp.data[i]), UVM_LOW)
-          end
+          //end
         end
       end
       
