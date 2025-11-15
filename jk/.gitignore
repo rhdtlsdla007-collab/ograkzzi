@@ -1,0 +1,24 @@
+# 빌드/시뮬레이션 산출물 무시
+*.log
+*.conf
+*.rc
+*.vpd
+*.vcd
+*.db
+*.key
+*.fsdb
+*.cmd
+simv*
+csrc*
+novas*
+output/
+coverage/
+logs/
+compile.log
+novas_dump.log
+simulation.log
+tr_db.log
+ucli.key
+vc_hdrs.h
+*.swp
+*.tmp

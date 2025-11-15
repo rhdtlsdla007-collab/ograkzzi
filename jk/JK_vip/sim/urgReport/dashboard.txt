@@ -1,0 +1,22 @@
+Dashboard
+
+Date: Sat Nov 15 20:39:41 2025
+
+User: edu031
+
+Version: V-2023.12-SP2-8
+Command line: urg -dir simv.vdb -format text 
+
+Number of tests: 1
+
+-------------------------------------------------------------------------------
+Total Coverage Summary 
+SCORE  ASSERT GROUP  
+  5.08 --       5.08 
+
+
+-------------------------------------------------------------------------------
+Total Groups Coverage Summary 
+SCORE  WEIGHT 
+  5.08 1      
+

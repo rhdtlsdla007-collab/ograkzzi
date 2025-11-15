@@ -1,0 +1,39 @@
+<session version="1.1" release="V-2023.12-SP2-8" timestp="2025-11-15 11:39:34 GMT">
+  <info>
+    <attr name="datetime" value="Sat Nov 15 20:39:41 2025
+"/>
+    <attr name="command" value="urg -dir simv.vdb -format text"/>
+    <attr name="top_instance" value="jk_ubus_tb_top,uvm_custom_install_recording,uvm_custom_install_verdi_recording,uvm_pkg,jk_ubus_common_pkg"/>
+  </info>
+  <hvp>
+    <datadef>
+      <metdef name="Assert" type="ratio" aggregator="average" builtin="1" />
+      <metdef name="Group" type="percent" aggregator="average" builtin="1" />
+    </datadef>
+  </hvp>
+  <old_coverage>
+  <scope type="top" name="top">
+    <metric name="Group" value="5.07812%" />
+  </scope>
+  <scope type="instance" name="top">
+  </scope>
+  <scope type="group" name="top">
+    <scope type="group" name="jk_ubus_common_pkg::jk_ubus_coverage::fcov_slave">
+      <metric name="Group" value="0%" />
+    </scope>
+    <scope type="group" name="jk_ubus_common_pkg::jk_ubus_coverage::fcov_master">
+      <metric name="Group" value="10.1562%" />
+    </scope>
+  </scope>
+  <scope type="assert" name="Statistics">
+    <scorelist type="total" name="Design Hierarchy Assert">
+      <score name="Assert" value="0/0" />
+      <score name="Score" value="0.00" />
+    </scorelist>
+    <scorelist type="total" name="Assertion">
+      <score name="Assert" value="0/0" />
+      <score name="Score" value="-nan" />
+    </scorelist>
+  </scope>
+  </old_coverage>
+</session>

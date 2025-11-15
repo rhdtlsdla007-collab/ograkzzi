@@ -30,26 +30,26 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 		2'b10 : data_size = 4;
 		2'b11 : data_size = 8;
 	endcase
-	@(posedge vif.clk);
-	vif.addr <= tr.addr;
-	vif.write <= tr.write;
-	vif.size <= tr.size;
-	vif.read <= tr.read;
+	@(vif.cb);
+	vif.cb.addr <= tr.addr;
+	vif.cb.write <= tr.write;
+	vif.cb.size <= tr.size;
+	vif.cb.read <= tr.read;
 
 	//first bit
-	@(posedge vif.clk);
-	vif.bip = (data_size == 1) ? 0 : 1;
-	tr.data[0] = vif.data;
+	@(vif.cb);
+	vif.cb.bip <= (data_size == 1) ? 0 : 1;
+	tr.data[0] = vif.data; // inout data는 사용하지 않음
 
 	for (int i = 1; i < data_size;i++) begin
-	@(posedge vif.clk);
-	tr.data[i] <= vif.data;
-	if (i == data_size - 1) vif.bip <= 0;
+	@(vif.cb);
+	tr.data[i] <= vif.data; // inout data는 사용하지 않음
+	if (i == data_size - 1) vif.cb.bip <= 0;
 	end
 
-	@(posedge vif.clk);
-	vif.write <= 0;
-	vif.read <= 0;
+	@(vif.cb);
+	vif.cb.write <= 0;
+	vif.cb.read <= 0;
 
  endtask
 
@@ -61,32 +61,32 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 		2'b10 : data_size = 4;
 		2'b11 : data_size = 8;
 	endcase
-	@(posedge vif.clk);
-	vif.addr<=tr.addr;
-	vif.write <= tr.write;
-	vif.read <= tr.read;
-	vif.size <= tr.size;
+	@(vif.cb);
+	vif.cb.addr<=tr.addr;
+	vif.cb.write <= tr.write;
+	vif.cb.read <= tr.read;
+	vif.cb.size <= tr.size;
 	  
 	  
 	// ✅ 첫 번째 데이터
-	@(posedge vif.clk);
-	vif.data <= tr.data[0];
-	vif.bip = (data_size==1) ? 0 : 1;
+	@(vif.cb);
+	vif.data <= tr.data[0]; // inout data는 사용하지 않음
+	vif.cb.bip <= (data_size==1) ? 0 : 1;
 	
 	// ✅ 나머지 데이터
 	foreach(tr.data[i]) begin
 		if (i > 0) begin  // i=0은 이미 위에서 함
-		@(posedge vif.clk);
-		vif.data <= tr.data[i];
-			if (i == data_size - 1) vif.bip <=0 ;
+		@(vif.cb);
+		vif.data <= tr.data[i]; // inout data는 사용하지 않음
+			if (i == data_size - 1) vif.cb.bip <=0 ;
 		end
 	end
 	
 	// ✅ 마지막 beat 후
-	@(posedge vif.clk);
-	vif.write <= 0;
-	vif.read <= 0;
-	vif.bip <= 0;
+	@(vif.cb);
+	vif.cb.write <= 0;
+	vif.cb.read <= 0;
+	vif.cb.bip <= 0;
 	
 	`uvm_info("MSTR_DRV", 
 		$sformatf("WRITE: addr=0x%0h, data=%p", tr.addr, tr.data), UVM_LOW)

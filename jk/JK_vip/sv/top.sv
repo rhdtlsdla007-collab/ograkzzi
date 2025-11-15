@@ -2,8 +2,9 @@
 
 module jk_ubus_tb_top;
   import uvm_pkg::*;
-  import jk_ubus_slave_pkg::*;
-  import jk_ubus_master_pkg::*;
+ // import jk_ubus_slave_pkg::*;
+ // import jk_ubus_master_pkg::*;
+  import jk_ubus_common_pkg::*;
 
   jk_ubus_master_if master_if();
   jk_ubus_slave_if slave_if();
