@@ -19,7 +19,7 @@ class incr_read_byte_seq extends jk_ubus_base_sequence;
 
  rand bit [15:0] start_address;
  rand int unsigned count;
- constraint count_ct { count > 0; count < 20;}
+ constraint count_ct { count > 0; count < 100;}
 
  virtual task body();
 	`uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM);
@@ -44,8 +44,8 @@ class incr_write_byte_seq extends jk_ubus_base_sequence;
  jk_ubus_master_transfer tr; 
 
  rand bit [15:0] start_address;
- rand bit unsigned count;
- constraint count_ct {count > 0; count < 20;}
+ rand int unsigned count;
+ constraint count_ct {count > 0; count < 100;}
 
  virtual task body();
 	`uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM)
@@ -63,7 +63,7 @@ endclass : incr_write_byte_seq
 class incr_read_write_read_seq extends jk_ubus_base_sequence;
  `uvm_object_utils(incr_read_write_read_seq)
 
- function new(string name = "incr_write_byte_seq");
+ function new(string name = "incr_read_write_read_seq");
 	super.new(name);
  endfunction
 
@@ -71,14 +71,17 @@ class incr_read_write_read_seq extends jk_ubus_base_sequence;
  incr_write_byte_seq write0;
 // incr_read_byte_seq read1;
 
- rand bit [15:0] start_address = 16'h1000;
+ rand bit [15:0] start_address;
+ rand int unsigned count; // Add count for this sequence
+ constraint start_address_ct { start_address >= 16'h0000; start_address <= 16'h4FFF; } // Constrain to a more reasonable range
+ constraint count_ct { count > 0; count < 100; } // Allow more transactions
 
  virtual task body();
-  `uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), 1), UVM_MEDIUM)
+  `uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM)
 
-  `uvm_do_with(read0, {count == 1; start_address == local::start_address;})
-  `uvm_do_with(write0, {count == 1; start_address == local::start_address;})
-  `uvm_do_with(read0, {count == 1; start_address == local::start_address;})
+  `uvm_do_with(write0, {count == local::count; start_address == local::start_address;}) // Use local::count
+  `uvm_do_with(read0, {count == local::count; start_address == local::start_address;})  // Use local::count
+  // If another read is intended, it should follow here
 
  endtask
 
@@ -95,5 +98,3 @@ endclass : incr_read_write_read_seq
 // 
 //  rand bit [15:0] addr_check;
 //  bit [7:0] m_data0_check;
-
-

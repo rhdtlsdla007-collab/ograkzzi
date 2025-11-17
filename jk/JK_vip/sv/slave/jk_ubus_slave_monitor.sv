@@ -31,22 +31,22 @@ class jk_ubus_slave_monitor extends uvm_monitor;
     forever begin
       jk_ubus_master_transfer req;
 
-      @(slave_if.cb);
+      @(posedge slave_if.clk);
       
-      if ((slave_if.cb.read || slave_if.cb.write)) begin
+      if ((slave_if.read || slave_if.write)) begin
         transaction_started = 1;
         req = new("req");
-        req.addr = slave_if.cb.addr;
+        req.addr = slave_if.addr;
         
-        case (slave_if.cb.size)
+        case (slave_if.size)
           2'b00: begin req.size = 0; data_size = 1; end
           2'b01: begin req.size = 1; data_size = 2; end
           2'b10: begin req.size = 2; data_size = 4; end
           2'b11: begin req.size = 3; data_size = 8; end
         endcase
         
-        req.read  = slave_if.cb.read;
-        req.write = slave_if.cb.write;
+        req.read  = slave_if.read;
+        req.write = slave_if.write;
         req.data  = new[data_size];
         req.wait_state = new[data_size];
         
@@ -58,11 +58,10 @@ class jk_ubus_slave_monitor extends uvm_monitor;
         
         // ===== READ/WRITE 동일 구조 =====
         if (req.read) begin
-          @(slave_if.cb);  // 첫 beat 대기
+          @(posedge slave_if.clk);  // 첫 beat 대기
           
           for (int i = 0; i < data_size; i++) begin
-            @(slave_if.cb); // 데이터 샘플링 전에 클럭 동기화
-            @(slave_if.cb); // 드라이버가 data를 구동하고 안정화될 때까지 추가 대기
+            @(posedge slave_if.clk); // Wait for the clock edge where driver drives data
             req.data[i] = slave_if.data;
             req.wait_state[i] = slave_if.wait_state;
             
@@ -73,11 +72,11 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           end
         end 
         else if (req.write) begin
-          @(slave_if.cb);  // 첫 beat 대기
+          @(posedge slave_if.clk);  // 첫 beat 대기
           
           for (int i = 0; i < data_size; i++) begin
-            @(slave_if.cb); // 데이터 샘플링 전에 클럭 동기화
-            @(slave_if.cb); // 드라이버가 data를 구동하고 안정화될 때까지 추가 대기
+            @(posedge slave_if.clk); // 데이터 샘플링 전에 클럭 동기화
+            @(posedge slave_if.clk); // 드라이버가 data를 구동하고 안정화될 때까지 추가 대기
             req.data[i] = slave_if.data; // inout data 사용
             req.wait_state[i] = slave_if.wait_state;
             
@@ -85,8 +84,8 @@ class jk_ubus_slave_monitor extends uvm_monitor;
               $sformatf("Write [%0d]: wait=%0b, DATA=%0h", 
                         i, req.wait_state[i], req.data[i]), UVM_MEDIUM)
             
-            // 다음 beat로 이동 (이미 위에서 @(slave_if.cb)를 했으므로 추가적인 @(slave_if.cb)는 필요 없음)
-            // if (i < data_size - 1) @(slave_if.cb);
+            // 다음 beat로 이동 (이미 위에서 @(posedge slave_if.clk)를 했으므로 추가적인 @(posedge slave_if.clk)는 필요 없음)
+            // if (i < data_size - 1) @(posedge slave_if.clk);
           end
         end
         
@@ -98,7 +97,7 @@ class jk_ubus_slave_monitor extends uvm_monitor;
                     req.addr), UVM_MEDIUM)
         
         // 다음 트랜잭션 대기
-        while (slave_if.cb.read || slave_if.cb.write) @(slave_if.cb);
+        while (slave_if.read || slave_if.write) @(posedge slave_if.clk);
         transaction_started = 0;
       end
     end

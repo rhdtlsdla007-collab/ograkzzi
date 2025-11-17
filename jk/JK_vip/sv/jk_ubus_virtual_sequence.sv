@@ -13,14 +13,23 @@ class jk_ubus_virtual_sequence extends uvm_sequence;
  endfunction
 
  virtual task body();
- 	m_incr_read_seq = incr_read_byte_seq::type_id::create("m_incr_read_seq");
-	if(!m_incr_read_seq.randomize())
-	 `uvm_fatal("READ","Sequence randomization failed")
-	m_incr_write_seq = incr_write_byte_seq::type_id::create("m_incr_write_seq");
-	if (!m_incr_write_seq.randomize())
+ m_incr_write_seq = incr_write_byte_seq::type_id::create("m_incr_write_seq");
+	if (!m_incr_write_seq.randomize() with { count > 1; }) // Randomize count for write sequence
 	 `uvm_fatal("WRITE","Sequence randomization failed")
 
+	m_incr_read_seq = incr_read_byte_seq::type_id::create("m_incr_read_seq");
+	if(!m_incr_read_seq.randomize() with {
+		start_address == m_incr_write_seq.start_address;
+		count == m_incr_write_seq.count; // Keep count coordinated with write sequence
+	})
+	 `uvm_fatal("READ","Sequence randomization failed")
+
 	m_incr_rwr_seq = incr_read_write_read_seq::type_id::create("m_incr_rwr_seq");
+	if(!m_incr_rwr_seq.randomize() with {
+		start_address == m_incr_write_seq.start_address;
+		count > 1; // Randomize count for read-write-read sequence
+	})
+	 `uvm_fatal("RWR","Sequence randomization failed")
 //	m_rmw_seq = read_modify_write_seq::type_id::create("m_rmw_seq");
 	s_slave_seq = jk_ubus_slave_sequence::type_id::create("s_slave_seq");
  fork
