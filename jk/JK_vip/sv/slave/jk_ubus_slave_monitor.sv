@@ -58,24 +58,26 @@ class jk_ubus_slave_monitor extends uvm_monitor;
         
         // ===== READ/WRITE 동일 구조 =====
         if (req.read) begin
-    @(slave_if.cb);  // ✅ 주석 제거! 첫 beat 대기
-    
-    for (int i = 0; i < data_size; i++) begin
-        req.data[i] = slave_if.data;
-        req.wait_state[i] = slave_if.wait_state;
-        
-        `uvm_info("SLAVE_MON", 
-            $sformatf("Read [%0d]: wait=%0b, DATA=%0h", 
-                i, req.wait_state[i], req.data[i]), UVM_HIGH)
-        
-        // 다음 beat로 이동
-        if (i < data_size - 1) @(slave_if.cb);
-        end
-      end
-        else if (req.write) begin
-          @(slave_if.cb);  // ✅ 첫 beat 대기
+          @(slave_if.cb);  // 첫 beat 대기
           
           for (int i = 0; i < data_size; i++) begin
+            @(slave_if.cb); // 데이터 샘플링 전에 클럭 동기화
+            @(slave_if.cb); // 드라이버가 data를 구동하고 안정화될 때까지 추가 대기
+            req.data[i] = slave_if.data;
+            req.wait_state[i] = slave_if.wait_state;
+            
+            `uvm_info("SLAVE_MON", 
+              $sformatf("Read [%0d]: wait=%0b, DATA=%0h", 
+                        i, req.wait_state[i], req.data[i]), UVM_HIGH)
+            
+          end
+        end 
+        else if (req.write) begin
+          @(slave_if.cb);  // 첫 beat 대기
+          
+          for (int i = 0; i < data_size; i++) begin
+            @(slave_if.cb); // 데이터 샘플링 전에 클럭 동기화
+            @(slave_if.cb); // 드라이버가 data를 구동하고 안정화될 때까지 추가 대기
             req.data[i] = slave_if.data; // inout data 사용
             req.wait_state[i] = slave_if.wait_state;
             
@@ -83,8 +85,8 @@ class jk_ubus_slave_monitor extends uvm_monitor;
               $sformatf("Write [%0d]: wait=%0b, DATA=%0h", 
                         i, req.wait_state[i], req.data[i]), UVM_MEDIUM)
             
-            // ✅ 다음 beat로 이동
-            if (i < data_size - 1) @(slave_if.cb);
+            // 다음 beat로 이동 (이미 위에서 @(slave_if.cb)를 했으므로 추가적인 @(slave_if.cb)는 필요 없음)
+            // if (i < data_size - 1) @(slave_if.cb);
           end
         end
         

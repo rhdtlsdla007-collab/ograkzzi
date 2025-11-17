@@ -27,11 +27,10 @@ class jk_ubus_virtual_sequence extends uvm_sequence;
 	s_slave_seq.start(p_sequencer.slave_sequencer);
  join_none
 
- m_incr_read_seq.start(p_sequencer.master_sequencer);
- m_incr_write_seq.start(p_sequencer.master_sequencer);
+ m_incr_write_seq.start(p_sequencer.master_sequencer); // 먼저 쓰기 시퀀스 실행
+ m_incr_read_seq.start(p_sequencer.master_sequencer);  // 그 다음 읽기 시퀀스 실행
  m_incr_rwr_seq.start(p_sequencer.master_sequencer);
  //m_rmw_seq.start(p_sequencer.master_sequencer);
  endtask
 
 endclass
-

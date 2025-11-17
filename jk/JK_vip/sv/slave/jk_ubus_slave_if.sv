@@ -14,6 +14,7 @@ interface jk_ubus_slave_if ();
         default input #1ns output #1ns;
         input read, write, bip, addr, size, reset;
         output error, wait_state;
+        inout data; // inout data 유지
     endclocking 
     
 
