@@ -9,7 +9,6 @@ interface jk_ubus_master_if();
   default input #1ns output #1ns;
 	input error, wait_state;
 	output read, write, bip, addr, size, reset;
-    inout data; // inout data 유지
 endclocking 
 
 endinterface : jk_ubus_master_if

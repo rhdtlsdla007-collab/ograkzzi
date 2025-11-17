@@ -34,7 +34,7 @@ class jk_ubus_master_monitor extends uvm_monitor;
 		endcase
 	   foreach(req.data[i]) begin
 		@(vif.cb);
-		req.data[i] <= vif.cb.data; 
+		req.data[i] = vif.data; 
 	if (req.read)	`uvm_info("MASTER_MON", $sformatf("READ : %p, ADDR : %h, DATA : %h", req.read, req.addr, req.data[i]), UVM_MEDIUM);
 	   end
 	
