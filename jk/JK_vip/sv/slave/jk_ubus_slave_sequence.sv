@@ -37,15 +37,22 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
           rsp.data[i] = req.data[i];
                               `uvm_info("SLAVE_MON", $sformatf("SEQaddr=0x%0h size=%0d read=%0b write=%0b data=%p", 
                   req.addr, req.size, req.read, req.write, req.data[i]), UVM_MEDIUM)
-        end
+          end
         if (req.read) begin
-         // if (!m_mem.exists(req.addr + i)) begin
-            m_mem[req.addr + i] = $urandom_range(8'h10, 8'hFF);
-            rsp.data[i] = m_mem[req.addr + i];
-          `uvm_info("SLAVE_SEQ", $sformatf("SEQ_rsp.data = %p", rsp.data[i]), UVM_LOW)
-          //end
-        end
+        // ✅ 주석 제거하고 로직 수정
+        if (m_mem.exists(req.addr + i)) begin
+        // 기존에 Write된 데이터 사용
+        rsp.data[i] = m_mem[req.addr + i];
+        `uvm_info("SLAVE_SEQ", 
+            $sformatf("Read from memory: addr=0x%0h, data=0x%0h", 
+                req.addr + i, rsp.data[i]), UVM_LOW)
+        end 
+        else begin
+        // 초기화 안 된 주소는 랜덤 또는 0
+        rsp.data[i] = 8'h00;
       end
+    end
+  end
       
       start_item(rsp);
       finish_item(rsp);

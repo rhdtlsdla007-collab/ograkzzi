@@ -5,7 +5,7 @@ class jk_ubus_env extends uvm_env;
     jk_ubus_slave_agent slave_agent;
     jk_ubus_master_agent master_agent;
     jk_ubus_scoreboard scoreboard;
-    jk_ubus_coverage ubus_coverage;
+    coverage_sb ubus_coverage;
 
     function new(string name = "jk_ubus_env", uvm_component parent);
         super.new(name, parent);
@@ -17,16 +17,17 @@ class jk_ubus_env extends uvm_env;
         master_agent = jk_ubus_master_agent::type_id::create("master_agent", this);
 	    virtual_sequencer = jk_ubus_virtual_sequencer::type_id::create("virtual_suencer", this);
        scoreboard = jk_ubus_scoreboard::type_id::create("scoreboard", this);
-       ubus_coverage = jk_ubus_coverage::type_id::create("ubus_coverage", this);
+       ubus_coverage = coverage_sb::type_id::create("ubus_coverage", this);
     endfunction
 
     function void connect_phase(uvm_phase phase);
        master_agent.monitor.item_collected_port.connect(scoreboard.master_item_collected_export);
-       master_agent.monitor.item_collected_port.connect(ubus_coverage.master_analysis_export); 
+     //  master_agent.monitor.item_collected_port.connect(ubus_coverage.master_analysis_export); 
        slave_agent.monitor.item_collected_port.connect(scoreboard.slave_item_collected_export);
-       slave_agent.monitor.item_collected_port.connect(ubus_coverage.slave_analysis_export); 
+     //  slave_agent.monitor.item_collected_port.connect(ubus_coverage.slave_analysis_export); 
        virtual_sequencer.master_sequencer = master_agent.sequencer;
        virtual_sequencer.slave_sequencer = slave_agent.sequencer;
+       master_agent.monitor.item_collected_port.connect(ubus_coverage.analysis_export);
     endfunction
 
 

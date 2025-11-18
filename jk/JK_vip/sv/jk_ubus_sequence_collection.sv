@@ -9,21 +9,26 @@ endclass : jk_ubus_base_sequence
 //////////////
 
 class incr_read_byte_seq extends jk_ubus_base_sequence;
+//class incr_read_byte_seq extends uvm_sequence#(jk_ubus_master_transfer);
+
  `uvm_object_utils(incr_read_byte_seq)
 
  function new(string name = "incr_read_byte_seq");
 	super.new(name);
  endfunction
  
- jk_ubus_master_transfer tr;
+ //jk_ubus_master_transfer tr;
 
  rand bit [15:0] start_address;
  rand int unsigned count;
  constraint count_ct { count > 0; count < 20;}
+ 
 
  virtual task body();
+//	`uvm_info("HI",$sformatf("HII"), UVM_LOW)
+	jk_ubus_master_transfer tr;
 	`uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM);
- // 	jk_ubus_master_transfer tr;
+  
   repeat(count) begin
 	`uvm_do_with(tr, {addr == start_address; rw == 0;})
 	start_address++;

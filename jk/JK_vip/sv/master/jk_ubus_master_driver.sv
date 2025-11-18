@@ -47,6 +47,9 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	if (i == data_size - 1) vif.cb.bip <= 0;
 	end
 
+	`uvm_info("MSTR_DRV", 
+		$sformatf("READ: addr=0x%0h, data=%p", tr.addr, tr.data), UVM_LOW)
+
 	@(vif.cb);
 	vif.cb.write <= 0;
 	vif.cb.read <= 0;
