@@ -1,0 +1,76 @@
+     class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
+  `uvm_component_utils(jk_ubus_slave_driver)
+
+  virtual jk_ubus_slave_if vif;
+  jk_ubus_master_transfer rsp;
+
+  function new(string name, uvm_component parent);
+    super.new(name, parent);
+  endfunction : new
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    if (!uvm_config_db#(virtual jk_ubus_slave_if)::get(this, "", "vif", vif)) begin
+      `uvm_fatal("NOVIF", "No virtual interface specified for this driver instance")
+    end
+  endfunction : build_phase
+
+  task run_phase(uvm_phase phase);
+  rsp = jk_ubus_master_transfer::type_id::create("rsp");
+    forever begin
+      wait(vif.read || vif.write);
+      if (vif.read) begin
+        seq_item_port.get_next_item(rsp);
+        drive_read_rsponse(rsp);
+        seq_item_port.item_done();
+        `uvm_info("slave 드라이버 ", $sformatf("DRV rsp.read=%0d", rsp.read), UVM_LOW)
+        
+      end
+    else if (vif.write) begin
+      @(posedge vif.clk)
+      drive_write_response(rsp);
+      seq_item_port.item_done();
+      end
+    end
+  endtask : run_phase
+
+  virtual protected task drive_read_rsponse(jk_ubus_master_transfer rsp);
+    int data_beats;
+    data_beats = size_to_beats(rsp.size);
+
+    `uvm_info("SLV_DRV", "Processing READ transaction", UVM_LOW)
+
+    for (int i = 0; i < data_beats; i++) begin
+        vif.cb.wait_state <= 0;
+        vif.data <= rsp.data[i]; 
+        vif.cb.error <= rsp.error;
+        `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%p", rsp.data[i]), UVM_LOW)
+        @(vif.cb);
+        vif.cb.error <= 'z;
+    end
+    
+    vif.data <= 'z; 
+  endtask : drive_read_rsponse
+
+  virtual protected task drive_write_response(jk_ubus_master_transfer rsp);
+    `uvm_info("SLV_DRV", "Processing WRITE transaction", UVM_LOW)
+
+    //WRITE 응답 신호 구동
+    vif.cb.wait_state <= 0;
+    vif.cb.error <= rsp.error;
+    @(vif.cb);
+
+  //신호해제
+  vif.cb.error <= 'z;
+  endtask
+  
+  function automatic int unsigned size_to_beats(bit [1:0] size_value);
+    case (size_value)
+      2'b00: return 1;
+      2'b01: return 2;
+      2'b10: return 4;
+      default: return 8;
+    endcase
+  endfunction
+
+endclass : jk_ubus_slave_driver
