@@ -22,9 +22,7 @@ class jk_ubus_env extends uvm_env;
 
     function void connect_phase(uvm_phase phase);
        master_agent.monitor.item_collected_port.connect(scoreboard.master_item_collected_export);
-     //  master_agent.monitor.item_collected_port.connect(ubus_coverage.master_analysis_export); 
-       slave_agent.monitor.item_collected_port.connect(scoreboard.slave_item_collected_export);
-     //  slave_agent.monitor.item_collected_port.connect(ubus_coverage.slave_analysis_export); 
+       slave_agent.driver.item_collected_port.connect(scoreboard.slave_item_collected_export);
        virtual_sequencer.master_sequencer = master_agent.sequencer;
        virtual_sequencer.slave_sequencer = slave_agent.sequencer;
        master_agent.monitor.item_collected_port.connect(ubus_coverage.analysis_export);

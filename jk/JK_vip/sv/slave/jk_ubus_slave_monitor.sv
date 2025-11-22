@@ -30,11 +30,11 @@ class jk_ubus_slave_monitor extends uvm_monitor;
   task run_phase(uvm_phase phase);
     forever begin
       jk_ubus_master_transfer req;
-
-      @(posedge slave_if.clk); // cb 대신 클럭 에지에 직접 동기화
+      jk_ubus_master_transfer rsp;
+      @(posedge slave_if.clk);
       
-      if ((slave_if.read || slave_if.write)) begin // cb.read/write 대신 직접 접근
-        transaction_started = 1;
+      if ((slave_if.read || slave_if.write)) begin
+	      transaction_started = 1;
         req = new("req");
         req.addr = slave_if.addr; // cb.addr 대신 직접 접근
         
@@ -54,11 +54,9 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
                     req.addr, req.size, req.read, req.write), UVM_MEDIUM)
         
-        request_aport.write(req);
-        
-        // ===== READ/WRITE 동일 구조 =====
         if (req.read) begin
-          @(posedge slave_if.clk);  
+	        request_aport.write(req);
+          @(posedge slave_if.clk);
           
           for (int i = 0; i < data_size; i++) begin
           wait (!slave_if.wait_state); 
@@ -67,35 +65,34 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           req.wait_state[i] = slave_if.wait_state; 
         
             `uvm_info("SLAVE_MON", $sformatf("Read [%0d]: wait=%0b, DATA=%0h", i, req.wait_state[i], req.data[i]), UVM_HIGH)
-        // 다음 beat로 이동
-        if (i < data_size - 1) @(posedge slave_if.clk); // cb 대신 클럭 에지에 동기화
+        if (i < data_size - 1) @(posedge slave_if.clk); 
         end
       end
         else if (req.write) begin
-          @(posedge slave_if.clk);  // 첫 beat 대기 (클럭 에지에 동기화)
+          @(posedge slave_if.clk);  
           
           for (int i = 0; i < data_size; i++) begin
-            req.data[i] = slave_if.data; // cb.data 대신 직접 접근
-            req.wait_state[i] = slave_if.wait_state; // cb.wait_state 대신 직접 접근
+            req.data[i] = slave_if.data; 
+            req.wait_state[i] = slave_if.wait_state; 
             
             `uvm_info("SLAVE_MON", 
               $sformatf("Write [%0d]: wait=%0b, DATA=%0h", 
                         i, req.wait_state[i], req.data[i]), UVM_MEDIUM)
-            
-            // 다음 beat로 이동
-            if (i < data_size - 1) @(posedge slave_if.clk); // cb 대신 클럭 에지에 동기화
+          
+            if (i < data_size - 1) @(posedge slave_if.clk); 
           end
+		      request_aport.write(req);
         end
-        
-        req.error = slave_if.error; // cb.error 대신 직접 접근
+        req.error = slave_if.error; 
         item_collected_port.write(req);
         
         `uvm_info("SLAVE_MON", $sformatf(">>> 완료 <<< addr=0x%0h", req.addr), UVM_MEDIUM)
         
-        // 다음 트랜잭션 대기
-        while (slave_if.read || slave_if.write) @(posedge slave_if.clk); // cb.read/write 대신 직접 접근
+        
+        while (slave_if.read || slave_if.write) @(posedge slave_if.clk); 
         transaction_started = 0;
       end
+      
     end
   endtask
 endclass : jk_ubus_slave_monitor

@@ -4,8 +4,7 @@ class jk_ubus_virtual_sequence extends uvm_sequence;
 
  incr_read_byte_seq	m_incr_read_seq;
  incr_write_byte_seq	m_incr_write_seq;
- incr_read_write_read_seq m_incr_rwr_seq;
- //read_modify_write_seq 	m_rmw_seq;
+ incr_read_write_read_seq m_incr_rwr_seq; 
  jk_ubus_slave_sequence	s_slave_seq;
 
  function new(string name = "jk_ubus_virtual_sequence");
@@ -20,8 +19,7 @@ class jk_ubus_virtual_sequence extends uvm_sequence;
 	if (!m_incr_write_seq.randomize())
 	 `uvm_fatal("WRITE","Sequence randomization failed")
 
-	m_incr_rwr_seq = incr_read_write_read_seq::type_id::create("m_incr_rwr_seq");
-//	m_rmw_seq = read_modify_write_seq::type_id::create("m_rmw_seq");
+//	m_incr_rwr_seq = incr_read_write_read_seq::type_id::create("m_incr_rwr_seq");
 	s_slave_seq = jk_ubus_slave_sequence::type_id::create("s_slave_seq");
  fork
 	s_slave_seq.start(p_sequencer.slave_sequencer);
@@ -29,8 +27,7 @@ class jk_ubus_virtual_sequence extends uvm_sequence;
 
  m_incr_read_seq.start(p_sequencer.master_sequencer);
  m_incr_write_seq.start(p_sequencer.master_sequencer);
- m_incr_rwr_seq.start(p_sequencer.master_sequencer);
- //m_rmw_seq.start(p_sequencer.master_sequencer);
+ //m_incr_rwr_seq.start(p_sequencer.master_sequencer);
  endtask
 
 endclass

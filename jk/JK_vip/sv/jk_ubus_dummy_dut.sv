@@ -18,10 +18,10 @@ module jk_ubus_dummy_dut (
   assign slave_if.bip   = master_if.bip;
 
   // WRITE 데이터
-  assign slave_if.data = (master_if.write) ? master_if.data : 'hz;
+  assign slave_if.data = master_if.data;
 
   // READ 데이터
-  assign master_if.data = (master_if.read) ? slave_if.data : 'hz;
+  assign master_if.data = slave_if.data;
 
   // 응답 신호
   assign master_if.wait_state = slave_if.wait_state;

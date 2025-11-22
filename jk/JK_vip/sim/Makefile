@@ -1,5 +1,3 @@
-# Makefile for UVM Lab1
-
 test = jk_ubus_virtual_sequence_test
 program_path = ../sv
 slave_path = ../sv/slave
@@ -7,24 +5,17 @@ master_path = ../sv/master
 PROGRAM_TOP = ${program_path}/top.sv
 SLAVE_INTERFACE = ${program_path}/slave/jk_ubus_slave_if.sv
 MASTER_INTERFACE = ${program_path}/master/jk_ubus_master_if.sv
-SLAVE_FILES = ${program_path}/slave/jk_ubus_slave_pkg.sv
 common_path = ../sv/common
 COMMON_FILES = ${common_path}/jk_ubus_common_pkg.sv
-
-MASTER_FILES = ${master_path}/jk_ubus_master_pkg.sv
 
 TEST_TOP = ${SLAVE_INTERFACE} ${MASTER_INTERFACE} ${COMMON_FILES} ${PROGRAM_TOP}
 log = simv.log
 verbosity = UVM_HIGH
 uvm_ver = uvm-1.2
 seed = 1
-defines =
 uvm_defines = UVM_NO_DEPRECATED+UVM_OBJECT_MUST_HAVE_CONSTRUCTOR
-plus = 
 option = UVM_TR_RECORD +UVM_LOG_RECORD
-trace =
 
-# Set default 64bit!
 CES64 = TRUE
 
 compile_switches = -sverilog -lca -debug_access+all+reverse -kdb +vcs+vcdpluson -timescale="1ns/100ps" -l comp.log -ntb_opts ${uvm_ver} +incdir+${program_path}+${master_path}+${slave_path}+${common_path} ${TEST_TOP} +define+${uvm_defines}+${defines} -q -cm line+cond+fsm+tgl+branch+assert -cm_dir simv.vdb
@@ -47,28 +38,12 @@ run:
 random: simv
 	./simv +ntb_random_seed_automatic ${runtime_switches}
 
-environment:
-	cp ../../solutions/lab1/packet.sv .
-	cp ../../solutions/lab1/router_env.sv .
-	cp ../../solutions/lab1/input_agent.sv .
-	cp ../../solutions/lab1/driver.sv .
-
-solution: nuke
-	cp ../../solutions/lab1/*.sv .
-
-original: copy
-
+clean:
+	rm -rf simv* csrc* *.tmp *.vpd *.key log *.h temp *.log .vcs* *.txt DVE* *.hvp urg* .inter.vpd.uvm .restart* .synopsys* novas.* *.dat *.fsdb verdi*
+	
 cover:
 	urg -dir simv.vdb
 	urg -dir simv.vdb -format text
-
-copy: nuke
-
-clean:
-	rm -rf simv* csrc* *.tmp *.vpd *.key log *.h temp *.log .vcs* *.txt DVE* *.hvp urg* .inter.vpd.uvm .restart* .synopsys* novas.* *.dat *.fsdb verdi*
-
-nuke: clean
-	rm -rf *.sv
 
 help:
 	@echo =======================================================================

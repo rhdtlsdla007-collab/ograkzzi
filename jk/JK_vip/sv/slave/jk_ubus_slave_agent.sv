@@ -19,6 +19,6 @@ class jk_ubus_slave_agent extends uvm_agent;
     function void connect_phase(uvm_phase phase);
         super.connect_phase(phase);
         driver.seq_item_port.connect(sequencer.seq_item_export);
-        monitor.item_collected_port.connect(sequencer.request_fifo.analysis_export);
+        monitor.request_aport.connect(sequencer.request_fifo.analysis_export);  
     endfunction
 endclass: jk_ubus_slave_agent

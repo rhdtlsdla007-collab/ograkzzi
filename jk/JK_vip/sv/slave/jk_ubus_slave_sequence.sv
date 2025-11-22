@@ -5,21 +5,24 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
   int unsigned m_mem[int unsigned];
 
   jk_ubus_master_transfer req;
-  jk_ubus_master_transfer rsp;
-
+  jk_ubus_master_transfer rsp; 
 
   function new(string name = "jk_ubus_slave_sequence");
     super.new(name);
     req = jk_ubus_master_transfer::type_id::create("req");
     rsp = jk_ubus_master_transfer::type_id::create("rsp");
-  endfunction : new
+   endfunction : new
 
   virtual task body();
     jk_ubus_master_transfer req, rsp;
     int data_beats;
     forever begin
       p_sequencer.request_fifo.get(req);
-      rsp = jk_ubus_master_transfer::type_id::create("rsp");
+	 `uvm_info("SLAVE_SEQ", 
+          $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
+                    req.addr, req.size, req.read, req.write), UVM_MEDIUM)
+
+               rsp = jk_ubus_master_transfer::type_id::create("rsp");
       rsp.addr = req.addr;
       rsp.size = req.size;
       rsp.read = req.read;
@@ -49,11 +52,11 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
         end 
         else begin
         // 초기화 안 된 주소는 랜덤 또는 0
-        rsp.data[i] = 8'h00;
+        rsp.data[i] = $urandom();
       end
     end
   end
-      
+   
       start_item(rsp);
       finish_item(rsp);
       rsp.print();

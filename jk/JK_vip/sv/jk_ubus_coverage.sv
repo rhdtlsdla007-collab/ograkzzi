@@ -5,10 +5,12 @@ class coverage_sb extends uvm_subscriber #(jk_ubus_master_transfer);
 
  covergroup cov1;
 	cov_data : coverpoint tr.data[0] {
+			option.auto_bin_max = 16;
 		}
 	cov_size : coverpoint tr.size{
 		}
 	cov_addr : coverpoint tr.addr{
+			option.auto_bin_max=16;
 		}
 	cov_write : coverpoint tr.write{
 		}

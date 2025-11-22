@@ -9,11 +9,7 @@ class jk_ubus_master_sequence extends uvm_sequence#(jk_ubus_master_transfer);
 	jk_ubus_master_transfer tr;
   repeat (5) begin
 	`uvm_do(tr)
-	// tr = jk_ubus_master_transfer::type_id::create("tr");
-	// assert(tr.randomize);
-	// start_item(tr);
-	// tr.print();
-	// finish_item(tr);
+	get_response(tr);
 	`uvm_info("MsT", $sformatf(": 0x%p ", tr.data), UVM_HIGH)
   end
  endtask : body

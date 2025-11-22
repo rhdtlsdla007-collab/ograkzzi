@@ -9,7 +9,6 @@ endclass : jk_ubus_base_sequence
 //////////////
 
 class incr_read_byte_seq extends jk_ubus_base_sequence;
-//class incr_read_byte_seq extends uvm_sequence#(jk_ubus_master_transfer);
 
  `uvm_object_utils(incr_read_byte_seq)
 
@@ -17,21 +16,20 @@ class incr_read_byte_seq extends jk_ubus_base_sequence;
 	super.new(name);
  endfunction
  
- //jk_ubus_master_transfer tr;
+ 
 
- rand bit [15:0] start_address;
- rand int unsigned count;
- constraint count_ct { count > 0; count < 100;}
+ //rand bit [15:0] start_address;
+ int unsigned count = 50;
  
 
  virtual task body();
-//	`uvm_info("HI",$sformatf("HII"), UVM_LOW)
 	jk_ubus_master_transfer tr;
 	`uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM);
   
   repeat(count) begin
-	`uvm_do_with(tr, {addr == start_address; rw == 0;})
-	start_address++;
+//	`uvm_do_with(tr, {addr == start_address; rw == 0;})
+ 	`uvm_do_with(tr, {rw == 0;})
+//	start_address++;
   end
  endtask
 
@@ -48,16 +46,18 @@ class incr_write_byte_seq extends jk_ubus_base_sequence;
   
  jk_ubus_master_transfer tr; 
 
- rand bit [15:0] start_address;
- rand bit unsigned count;
- constraint count_ct {count > 0; count < 100;}
+// rand bit [15:0] start_address;
+ int unsigned count = 50;
+ 
+
 
  virtual task body();
 	`uvm_info(get_type_name(), $sformatf("%s starting with count = %0d", get_sequence_path(), count), UVM_MEDIUM)
-  // jk_ubus_master_transfer tr;
   repeat(count) begin
-	`uvm_do_with(tr, {addr == start_address; rw ==1;})
-	start_address++;
+//	`uvm_do_with(tr, {addr == start_address; rw ==1;})
+	`uvm_do_with(tr, {rw == 1;})
+
+//	start_address++;
   end
  endtask
 
@@ -74,7 +74,6 @@ class incr_read_write_read_seq extends jk_ubus_base_sequence;
 
  incr_read_byte_seq read0;
  incr_write_byte_seq write0;
-// incr_read_byte_seq read1;
 
  rand bit [15:0] start_address = 16'h1000;
 
@@ -85,20 +84,8 @@ class incr_read_write_read_seq extends jk_ubus_base_sequence;
   `uvm_do_with(write0, {count == 1; start_address == local::start_address;})
   `uvm_do_with(read0, {count == 1; start_address == local::start_address;})
 
+
  endtask
 
 endclass : incr_read_write_read_seq
-
-//////////////
-
-// class read_modify_write_seq extends jk_ubus_base_sequence;
-//  `uvm_object_utils(read_modify_write_seq)
-// 
-//  function new(string name = "read_modify_write_seq");
-// 	super.new(name);
-//  endfunction
-// 
-//  rand bit [15:0] addr_check;
-//  bit [7:0] m_data0_check;
-
 

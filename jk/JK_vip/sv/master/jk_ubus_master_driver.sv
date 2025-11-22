@@ -38,6 +38,8 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 
 	//first bit
 	@(vif.cb);
+	vif.cb.write <=0;
+	vif.cb.read <=0;
 	vif.cb.bip <= (data_size == 1) ? 0 : 1;
 	tr.data[0] = vif.data; // inout data는 사용하지 않음
 
@@ -73,6 +75,8 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	  
 	// ✅ 첫 번째 데이터
 	@(vif.cb);
+	vif.cb.read <= 0;
+	vif.cb.write <= 0;
 	vif.data <= tr.data[0]; // inout data는 사용하지 않음
 	vif.cb.bip <= (data_size==1) ? 0 : 1;
 	
@@ -87,6 +91,7 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	
 	// ✅ 마지막 beat 후
 	@(vif.cb);
+	vif.data <= 'z;
 	vif.cb.write <= 0;
 	vif.cb.read <= 0;
 	vif.cb.bip <= 0;
