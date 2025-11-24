@@ -1,0 +1,45 @@
+verdiSetActWin -dock widgetDock_<Message>
+simSetSimulator "-vcssv" -exec \
+           "/DATA/home/edu031/UVM/UVM_TB/missions/mission_4/sim/simv" -args
+debImport "-dbdir" \
+          "/DATA/home/edu031/UVM/UVM_TB/missions/mission_4/sim/simv.daidir"
+debLoadSimResult /DATA/home/edu031/UVM/UVM_TB/missions/mission_4/sim/dump.fsdb
+wvCreateWindow
+verdiWindowResize -win $_Verdi_1 "8" "31" "865" "566"
+verdiSetActWin -dock widgetDock_MTB_SOURCE_TAB_1
+verdiSetActWin -dock widgetDock_<Inst._Tree>
+srcDeselectAll -win $_nTrace1
+verdiSetActWin -dock widgetDock_MTB_SOURCE_TAB_1
+srcDeselectAll -win $_nTrace1
+srcSelect -win $_nTrace1 -signal "tb_top" -line 45 -pos 1
+srcDeselectAll -win $_nTrace1
+srcSelect -win $_nTrace1 -signal "tb_top" -line 45 -pos 1
+srcAction -pos 44 6 5 -win $_nTrace1 -name "tb_top" -ctrlKey off
+srcDeselectAll -win $_nTrace1
+srcDeselectAll -win $_nTrace1
+srcSelect -signal "presetn" -line 8 -pos 2 -win $_nTrace1
+srcSelect -win $_nTrace1 -signal "apb_if.paddr" -line 9 -pos 1
+srcSelect -win $_nTrace1 -signal "apb_if.pwdata" -line 10 -pos 1
+srcSelect -win $_nTrace1 -signal "apb_if.pselx" -line 11 -pos 1
+wvAddSignal -win $_nWave2 "/tb_top/presetn" "/tb_top/apb_if/paddr\[7:0\]" \
+           "/tb_top/apb_if/pwdata\[31:0\]" "/tb_top/apb_if/pselx"
+wvSetPosition -win $_nWave2 {("G1" 0)}
+wvSetPosition -win $_nWave2 {("G1" 4)}
+wvSetPosition -win $_nWave2 {("G1" 4)}
+wvZoomAll -win $_nWave2
+verdiSetActWin -win $_nWave2
+wvZoomAll -win $_nWave2
+wvZoomAll -win $_nWave2
+wvSetCursor -win $_nWave2 412622.375215 -snap {("G2" 0)}
+wvSetCursor -win $_nWave2 403652.323580 -snap {("G2" 0)}
+srcDeselectAll -win $_nTrace1
+srcDeselectAll -win $_nTrace1
+srcAction -pos 5 1 5 -win $_nTrace1 -name "apb_completer" -ctrlKey off
+verdiSetActWin -dock widgetDock_MTB_SOURCE_TAB_1
+srcDeselectAll -win $_nTrace1
+srcAction -pos 24 1 6 -win $_nTrace1 -name "test_prog" -ctrlKey off
+verdiSetActWin -dock widgetDock_<Inst._Tree>
+srcHBSelect "tb_top.prog.apb_if.dut_if" -win $_nTrace1
+srcSetScope "tb_top.prog.apb_if.dut_if" -delim "." -win $_nTrace1
+srcHBSelect "tb_top.prog.apb_if.dut_if" -win $_nTrace1
+srcHBSelect "tb_top.prog.apb_if.dut_if" -win $_nTrace1

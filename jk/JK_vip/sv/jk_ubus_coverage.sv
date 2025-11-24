@@ -7,15 +7,16 @@ class coverage_sb extends uvm_subscriber #(jk_ubus_master_transfer);
 	cov_data : coverpoint tr.data[0] {
 			option.auto_bin_max = 16;
 		}
-	cov_size : coverpoint tr.size{
-		}
 	cov_addr : coverpoint tr.addr{
 			option.auto_bin_max=16;
 		}
-	cov_write : coverpoint tr.write{
+	dir : coverpoint {tr.read, tr.write} {
+		bins write_state = {2'b01};
+		bins read_state  = {2'b10};
 		}
-	cov_read : coverpoint tr.read{
-		}
+	c_size : cross dir, tr.size;
+	c_data : cross dir, cov_data;
+	c_addr : cross dir, cov_addr;
  endgroup
 
  function new(string name, uvm_component parent);

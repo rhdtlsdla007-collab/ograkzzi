@@ -1,0 +1,10 @@
+../../dut/apb_completer.sv
+../tb/apb_interface.sv
+../tb/transaction.sv
+../tb/generator.sv
+../tb/driver.sv
+../tb/monitor.sv
+../tb/environment.sv
+../tb/test.sv
+../tb/test_prog.sv
+../tb/tb_top.sv

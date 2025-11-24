@@ -19,7 +19,7 @@ class incr_read_byte_seq extends jk_ubus_base_sequence;
  
 
  //rand bit [15:0] start_address;
- int unsigned count = 50;
+ int unsigned count = 100;
  
 
  virtual task body();
@@ -47,7 +47,7 @@ class incr_write_byte_seq extends jk_ubus_base_sequence;
  jk_ubus_master_transfer tr; 
 
 // rand bit [15:0] start_address;
- int unsigned count = 50;
+ int unsigned count = 100;
  
 
 

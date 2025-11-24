@@ -1,30 +1,72 @@
 # JK UVM 프로젝트 로드맵
 
-현재 진행 중: **WEEK6(11/16-11/21)**  
-프로젝트 기간 동안 매주 월요일 오전에 진행 상황을 공유 및 금주에 어떻게 할 지 정리, 목요일에는 프로젝트 진행상황 보고 및 문제 해결.
+현재 진행 중: **WEEK6 (11/17‒11/21)**  
+JK UVM 프로젝트는 UVM(Universal Verification Methodology)을 기반으로 UBUS 프로토콜을 검증하기 위한 VIP(Verification IP) 구축 및 테스트벤치 개발 프로젝트입니다.
+매주 월요일 진행 상황 공유, 목요일 이슈 해결 및 보고를 진행하고 있습니다.
 
 ---
+
+## 프로젝트 개요 (Overview)
+
+검증 대상 (DUT): UBUS Protocol (Master/Slave Architecture)
+
+검증 방법: UVM 1.2 (SystemVerilog)
+
+주요 기능:
+
+Configurable Master/Slave Agent
+
+Virtual Sequencer를 이용한 시나리오 제어
+
+Scoreboard를 통한 데이터 무결성 검증
+
+Coverage Driven Verification (목표 100%)
+
+참고: .gitignore 설정에 의해 시뮬레이션 생성물(*.log, *.fsdb, csrc/ 등)은 업로드되지 않습니다.
 
 ## 저희 폴더 처음에 사용하실 때
 - git clone 하시면 처음에 밑 git tree와 같이 폴더 생성됩니다.
-- 참고) .gitignore 파일 보시면 시뮬레이션 후 나오는 산출물 들은 무시하는 것을 알 수 있습니다.
+
 ---
 
 ## 현재 git tree
-└── jk\
-    ├── JK_vip\
-    │   ├── sim\
-    │   └── sv\
-    ├── week2\
-    │   ├── dongo\
-    │   └── jeong\
-    ├── week3\
-    │   ├── dong\
-    │   └── jeong\
-    └── week4\
-        ├── master\
-        └── verdiLog
+├── JK_vip\
+│   ├── sim\
+│   └── sv\
+├── jeong\
+│   └── missions\
+├── kwon\
+├── week2\
+│   ├── dongo\
+│   └── jeong\
+├── week3\
+│   ├── dong\
+│   └── jeong\
+├── week4\
+│   ├── master\
+│   └── verdiLog\
+├── week5\
+│   ├── JK_vip\
+│   ├── master\
+│   └── slave\
+└── week6\
+    └── JK_vip\
 ---
+
+## 시작하기 (Getting Started)
+
+1. 필수 환경 (Prerequisites)
+
+이 프로젝트를 실행하기 위해서는 다음 툴이 필요합니다.
+
+OS: Linux (CentOS/RHEL 권장)
+
+Simulator: Synopsys VCS (Ver O-2018.09-SP2 이상)
+
+Debug: Synopsys Verdi
+
+UVM Version: 1.2
+
 
 ## 클론한 뒤 실행 순서(flow)
 ```
@@ -71,15 +113,15 @@ verdi -ssf test.fsdb
 
 ## 프로젝트 캘린더
 
-| Week  | Date Range  | Mon                                                                                                                           | Tue                                                                                                                                                                                    | Wed                                                                                                                   | Thu                                                                                                                                                                                                                                                             | Fri                      |
-| ----- | ----------- | ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| WEEK1 | 10/13‒10/17 | 시스템베릴로그 수업                                                                                                                    | 시스템베릴로그 수업                                                                                                                                                                             | 시스템베릴로그 수업                                                                                                            | UVM 수업                                                                                                                                                                                                                                                          | UVM 수업                   |
-| WEEK2 | 10/20‒10/24 | UVM TB 구조 점검<br/>시뮬레이터/라이브러리 버전 확정                                                                                            | Git 기본 명령어 정리                                                                                                                                                                          | 파일·폴더 네이밍 정리<br/>`env`/`test_base`/`tb_top`/`transfer` 작성                                                             | 파형 미출력 원인 분석·질의응답으로 해결                                                                                                                                                                                                                                          | 워크로드 정리<br/>WEEK3 리소스 준비 |
-| WEEK3 | 10/27‒10/31 | UBUS 인터페이스·transfer 정의<br/>(`week3/dong/jk_ubus_interface.sv`, `week3/jeong/jk_ubus_if.sv`, `week3/dong/jk_ubus_transfer.sv`) | Master 에이전트 구성(Agent/Driver/Sequencer/Sequence) 작성<br/>(`week3/dong/jk_ubus_master_agent.sv`, `jk_ubus_master_driver.sv`, `jk_ubus_master_sequence.sv`, `jk_ubus_master_sequencer.sv`) | Master 환경 통합(Test/Env/TB-Top)<br/>(`week3/dong/jk_ubus_master_env.sv`, `jk_ubus_master_test.sv`, `jk_ubus_tb_top.sv`) | Slave 구성요소 작성(Agent/Driver/Monitor) 및 정비(Sequence/Env/PKG/TB-Top)<br/>(`week3/jeong/jk_ubus_slave_agent.sv`, `jk_ubus_slave_driver.sv`, `jk_ubus_slave_monitor.sv`, `jk_ubus_slave_sequence.sv`, `jk_ubus_slave_env.sv`, `jk_ubus_pkg.sv`, `jk_ubus_tb_top.sv`) | WEEK4 소스 준비<br/>WEEK3 복습 |
-| WEEK4 | 11/03‒11/07 | WEEK4 계획 수립·이론 수업                                                                                                             | Slave/Master 파일 작성 및 구조 정리                                                                                                                                                             | 신호 파형 분석(리셋·핸드셰이크 중심)                                                                                                 | 교수님·조교님 Q&A로 이슈 해결<br/>README 업데이트                                                                                                                                                                                                                              | Master/Slave 통합환경완성성                 |
-| WEEK5 | 11/10‒11/14 |ScoreBoard 계획, 코드작성 |ScoreBoard 디버깅 및 Virtual sequnence 정리 |ScoreBoard 완성 및 Virtual sequnece 코드 작성 |Virtual sequence 작성 완료 후 파형 확인 |Virtual sequence 디버깅 및 완성, README 파일 수정정 |
-| WEEK6 | 11/17‒11/21 | * | * | * | * | * |
-| WEEK7 | 11/24‒11/28 | * | * | * | * | * |
+| Week | Date Range | Mon | Tue | Wed | Thu | Fri |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **WEEK1** | 10/13‒10/17 | 시스템베릴로그 수업 | 시스템베릴로그 수업 | 시스템베릴로그 수업 | UVM 수업 | UVM 수업 |
+| **WEEK2** | 10/20‒10/24 | UVM TB 구조 점검<br/>시뮬레이터/라이브러리 버전 확정 | Git 기본 명령어 정리 | 파일·폴더 네이밍 정리<br/>`env`/`test_base`/`tb_top`/`transfer` 작성 | 파형 미출력 원인 분석·질의응답으로 해결 | 워크로드 정리<br/>WEEK3 리소스 준비 |
+| **WEEK3** | 10/27‒10/31 | UBUS 인터페이스·transfer 정의<br/>(`week3/dong/jk_ubus_interface.sv`<br/>`week3/jeong/jk_ubus_if.sv`<br/>`week3/dong/jk_ubus_transfer.sv`) | Master 에이전트 구성(Agent/Driver/Sequencer/Sequence) 작성<br/>(`week3/dong/jk_ubus_master_agent.sv`<br/>`jk_ubus_master_driver.sv`<br/>`jk_ubus_master_sequence.sv`<br/>`jk_ubus_master_sequencer.sv`) | Master 환경 통합(Test/Env/TB-Top)<br/>(`week3/dong/jk_ubus_master_env.sv`<br/>`jk_ubus_master_test.sv`<br/>`jk_ubus_tb_top.sv`) | Slave 구성요소 작성(Agent/Driver/Monitor) 및 정비(Sequence/Env/PKG/TB-Top)<br/>(`week3/jeong/jk_ubus_slave_agent.sv`<br/>`jk_ubus_slave_driver.sv`<br/>`jk_ubus_slave_monitor.sv`<br/>`jk_ubus_slave_sequence.sv`<br/>`jk_ubus_slave_env.sv`<br/>`jk_ubus_pkg.sv`<br/>`jk_ubus_tb_top.sv`) | WEEK4 소스 준비<br/>WEEK3 복습 |
+| **WEEK4** | 11/03‒11/07 | WEEK4 계획 수립·이론 수업 | Slave/Master 파일 작성 및 구조 정리 | 신호 파형 분석(리셋·핸드셰이크 중심) | 교수님·조교님 Q&A로 이슈 해결<br/>README 업데이트 | Master/Slave 통합환경완성성 |
+| **WEEK5** | 11/10‒11/14 | ScoreBoard 계획, 코드작성 | ScoreBoard 디버깅 및 Virtual sequence 정리 | ScoreBoard 완성 및 Virtual sequence 코드 작성 | Virtual sequence 작성 완료 후 파형 확인 | Virtual sequence 디버깅 및 완성, README 파일 수정 |
+| **WEEK6** | 11/17‒11/21 | Coverage 강의 수강 | Scoreboard & Slave Driver 연결<br/>파형 확인<br/>Coverage 100% 달성<br/>README 작성 | Scoreboard & Slave Driver 연결<br/>파형 확인<br/>Coverage 100% 달성<br/>README 작성 | Reactive Slave Architecture 강의 수강 | Scoreboard & Slave Driver 연결<br/>파형 확인<br/>Coverage 100% 달성<br/>README 작성 |
+| **WEEK7** | 11/24‒11/28 | * | * | * | * | * |
 
 ---
 
