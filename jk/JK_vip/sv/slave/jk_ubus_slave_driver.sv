@@ -5,6 +5,7 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
 
   uvm_analysis_port#(jk_ubus_master_transfer) item_collected_port;
 
+ int unsigned j = 0;
 
   function new(string name, uvm_component parent);
     super.new(name, parent);
@@ -40,28 +41,45 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     `uvm_info("SLV_DRV", "Processing READ transaction", UVM_LOW)
 
     for (int i = 0; i < data_beats; i++) begin
-      if (rsp.wait_state[i] == 1) begin
-	      vif.wait_state <= 1;
-	      @(posedge vif.clk);  // 1 cycle wait
-	      `uvm_info("SLV_DRV_WAIT", "Inserting 1 wait cycle", UVM_MEDIUM)
+      @(vif.cb);
+      vif.cb.wait_state <= rsp.wait_state[j];
+      while (rsp.wait_state[j]) begin
+        @(vif.cb);
+      j++;
       end
-	    vif.wait_state <= 0;
-      vif.data <= rsp.data[i];
-      `uvm_info("SLV_DRV_DATA", $sformatf("data[%0d]=%0h", i, rsp.data[i]), UVM_LOW)
-      @(posedge vif.clk);
+      vif.cb.wait_state <= rsp.wait_state[j];
+      j++;
+          //vif.cb.wait_state <= 0;
+      vif.data <= rsp.data[i]; 
+      `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%h", rsp.data[i]), UVM_LOW)
+      if(i==data_beats-1) @(vif.cb);
     end
+   
+    j = 0; 
     vif.data <= 'z; 
   endtask : drive_read_rsponse
 
   virtual protected task drive_write_response(jk_ubus_master_transfer rsp);
+	int data_beats;
+ 	data_beats = size_to_beats(rsp.size);
     `uvm_info("SLV_DRV", "Processing WRITE transaction", UVM_LOW)
-
     //WRITE 응답 신호 구동
-    vif.cb.wait_state <= 0;
+    //vif.cb.wait_state <= 0;
+   for (int i = 0; i < data_beats; i++) begin
+		@(vif.cb);
+		vif.cb.wait_state <= rsp.wait_state[j];
+		while (rsp.wait_state[j]) begin
+		 @(vif.cb);
+		 j++;
+ 		end
+	vif.cb.wait_state <= rsp.wait_state[j];
+    end
+
     vif.cb.error <= rsp.error;
     @(vif.cb);
 
   //신호해제
+  j = 0;
   vif.cb.error <= 'z;
   endtask
   

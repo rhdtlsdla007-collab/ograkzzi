@@ -20,6 +20,7 @@ class jk_ubus_master_monitor extends uvm_monitor;
  task run_phase(uvm_phase phase);
 	forever begin 
 	 @(posedge vif.clk);
+	while(vif.cb.wait_state) @(vif.cb);
 	  if (vif.read || vif.write) begin
 	bit read_state = vif.read;
 	   req = jk_ubus_master_transfer::type_id::create("req");
@@ -33,14 +34,11 @@ class jk_ubus_master_monitor extends uvm_monitor;
 		 2'b10 : req.data = new[4];
 		 2'b11 : req.data = new[8];
 		endcase
-
-		req.wait_state = new[vif.size];
 	   foreach(req.data[i]) begin
 		@(posedge vif.clk);
+		while(vif.cb.wait_state) @(vif.cb);
 		 req.data[i] = vif.data; 
-	if (req.read) 
-           `uvm_info("MASTER_MON", $sformatf("READ: addr=%h data[%0d]=%h wait=%0b", 
-                     req.addr, i, req.data[i], vif.wait_state), UVM_MEDIUM);
+	if (req.read)	`uvm_info("MASTER_MON", $sformatf("READ : %p, ADDR : %h, DATA : %h", req.read, req.addr, req.data[i]), UVM_MEDIUM);
 	   end
 	 if (read_state) @(posedge vif.clk);	
 	   item_collected_port.write(req);

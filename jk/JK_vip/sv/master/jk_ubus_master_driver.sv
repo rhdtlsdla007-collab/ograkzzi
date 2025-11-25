@@ -31,6 +31,9 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 		2'b11 : data_size = 8;
 	endcase
 	@(vif.cb);
+	while(vif.cb.wait_state) begin
+	 @(vif.cb);
+	end
 	vif.cb.addr <= tr.addr;
 	vif.cb.write <= tr.write;
 	vif.cb.size <= tr.size;
@@ -38,6 +41,9 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 
 	//first bit
 	@(vif.cb);
+	while(vif.cb.wait_state) begin
+	@(vif.cb);
+	end
 	vif.cb.write <=0;
 	vif.cb.read <=0;
 	vif.cb.bip <= (data_size == 1) ? 0 : 1;
@@ -47,6 +53,9 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 
 	for (int i = 1; i < data_size;i++) begin
 	@(vif.cb);
+	while(vif.cb.wait_state) begin
+	 @(vif.cb);
+	end 
 	tr.data[i] <= vif.data; // inout data는 사용하지 않음
 	if (i == data_size - 1) vif.cb.bip <= 0;
 	end
@@ -69,6 +78,7 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 		2'b11 : data_size = 8;
 	endcase
 	@(vif.cb);
+	while(vif.cb.wait_state) @(vif.cb);
 	vif.cb.addr<=tr.addr;
 	vif.cb.write <= tr.write;
 	vif.cb.read <= tr.read;
@@ -77,6 +87,7 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	  
 	// ✅ 첫 번째 데이터
 	@(vif.cb);
+	while(vif.cb.wait_state) @(vif.cb);
 	vif.cb.read <= 0;
 	vif.cb.write <= 0;
 	vif.cb.addr <= 'hz;
@@ -88,13 +99,17 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	foreach(tr.data[i]) begin
 		if (i > 0) begin  // i=0은 이미 위에서 함
 		@(vif.cb);
+		while(vif.cb.wait_state) @(vif.cb);
 		vif.data <= tr.data[i]; // inout data는 사용하지 않음
-			if (i == data_size - 1) vif.cb.bip <=0 ;
+			if (i == data_size - 1) begin	
+			vif.cb.bip <=0;
+			end
 		end
 	end
 	
 	// ✅ 마지막 beat 후
 	@(vif.cb);
+	while(vif.cb.wait_state) @(vif.cb);
 	vif.data <= 'z;
 	vif.cb.write <= 0;
 	vif.cb.read <= 0;
