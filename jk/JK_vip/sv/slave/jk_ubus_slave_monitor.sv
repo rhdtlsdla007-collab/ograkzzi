@@ -56,16 +56,13 @@ class jk_ubus_slave_monitor extends uvm_monitor;
         
         if (req.read) begin
 	        request_aport.write(req);
-          @(posedge slave_if.clk);
           
-          for (int i = 0; i < data_size; i++) begin
-          wait (!slave_if.wait_state); 
-          #1ns; 
+          for (int i = 0; i < data_size; i++) begin 
+		@(posedge slave_if.clk);
           req.data[i] = slave_if.data; 
           req.wait_state[i] = slave_if.wait_state; 
-        
             `uvm_info("SLAVE_MON", $sformatf("Read [%0d]: wait=%0b, DATA=%0h", i, req.wait_state[i], req.data[i]), UVM_HIGH)
-        if (i < data_size - 1) @(posedge slave_if.clk); 
+	 if (i == data_size -1) item_collected_port.write(req);
         end
       end
         else if (req.write) begin
@@ -81,10 +78,10 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           
             if (i < data_size - 1) @(posedge slave_if.clk); 
           end
+		item_collected_port.write(req);
 		      request_aport.write(req);
         end
         req.error = slave_if.error; 
-        item_collected_port.write(req);
         
         `uvm_info("SLAVE_MON", $sformatf(">>> 완료 <<< addr=0x%0h", req.addr), UVM_MEDIUM)
         

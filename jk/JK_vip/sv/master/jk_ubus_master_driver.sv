@@ -41,6 +41,8 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	vif.cb.write <=0;
 	vif.cb.read <=0;
 	vif.cb.bip <= (data_size == 1) ? 0 : 1;
+	vif.cb.addr <= 'hz;
+	vif.cb.size <= 'hz;
 	tr.data[0] = vif.data; // inout data는 사용하지 않음
 
 	for (int i = 1; i < data_size;i++) begin
@@ -77,6 +79,8 @@ class jk_ubus_master_driver extends uvm_driver#(jk_ubus_master_transfer);
 	@(vif.cb);
 	vif.cb.read <= 0;
 	vif.cb.write <= 0;
+	vif.cb.addr <= 'hz;
+	vif.cb.size <= 'hz;
 	vif.data <= tr.data[0]; // inout data는 사용하지 않음
 	vif.cb.bip <= (data_size==1) ? 0 : 1;
 	

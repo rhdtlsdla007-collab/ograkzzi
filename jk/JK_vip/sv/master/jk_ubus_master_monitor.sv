@@ -21,6 +21,7 @@ class jk_ubus_master_monitor extends uvm_monitor;
 	forever begin 
 	 @(posedge vif.clk);
 	  if (vif.read || vif.write) begin
+	bit read_state = vif.read;
 	   req = jk_ubus_master_transfer::type_id::create("req");
 	   req.addr = vif.addr;
 	   req.size = vif.size;
@@ -37,7 +38,7 @@ class jk_ubus_master_monitor extends uvm_monitor;
 		 req.data[i] = vif.data; 
 	if (req.read)	`uvm_info("MASTER_MON", $sformatf("READ : %p, ADDR : %h, DATA : %h", req.read, req.addr, req.data[i]), UVM_MEDIUM);
 	   end
-	
+	 if (read_state) @(posedge vif.clk);	
 	   item_collected_port.write(req);
 	 end
 	end

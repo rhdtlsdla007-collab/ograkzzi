@@ -44,18 +44,17 @@ protected function void memory_verify_master(jk_ubus_master_transfer trans);
         end
         if (trans.read) begin
                 num_reads++; // Master Read 카운트
-                if (m_mem_expected.exists(addr)) begin
+                if (m_mem_expected[addr] == data) 
                     // begin ... end 블록으로 감싸서 가독성과 안전성을 높였습니다.
-                    assert(m_mem_expected[addr] == data) begin
                         `uvm_info("SCOREBOARD", 
                             $sformatf("[MASTER] Read Check PASS: addr=0x%0h, data=0x%0h", addr, data), UVM_HIGH)
-                    end else begin
+                     else begin
                         `uvm_error("SCOREBOARD", 
                             $sformatf("[MASTER] Read Check FAIL: addr=0x%0h, Expected 0x%0h, Got 0x%0h", 
                             addr, m_mem_expected[addr], data))
                     end
                 end
-        end
+        
     end
         
 endfunction
