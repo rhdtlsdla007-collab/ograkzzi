@@ -35,14 +35,10 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
       rsp.size = req.size;
       rsp.read = req.read;
       rsp.write = req.write;
-
-     // data_beats = size_to_beats(req.size);
-      //rsp.data = new[data_beats];
       rsp.error = 0;
-      //rsp.wait_state = new[data_beats];
+      
 
       for (int i = 0; i < data_beats; i++) begin
-        //rsp.wait_state[i] = 1;
         if (req.write) begin
           m_mem[req.addr + i] = req.data[i];
           rsp.data[i] = req.data[i];
@@ -50,16 +46,13 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
                   req.addr, req.size, req.read, req.write, req.data[i]), UVM_MEDIUM)
           end
         if (req.read) begin
-        // ✅ 주석 제거하고 로직 수정
         if (m_mem.exists(req.addr + i)) begin
-        // 기존에 Write된 데이터 사용
         rsp.data[i] = m_mem[req.addr + i];
         `uvm_info("SLAVE_SEQ", 
             $sformatf("Read from memory: addr=0x%0h, data=0x%0h", 
                 req.addr + i, rsp.data[i]), UVM_LOW)
         end 
         else begin
-        // 초기화 안 된 주소는 랜덤 또는 0
         rsp.data[i] = $urandom();
       end
     end
