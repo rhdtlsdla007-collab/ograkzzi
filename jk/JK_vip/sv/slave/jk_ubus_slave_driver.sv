@@ -40,13 +40,16 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     `uvm_info("SLV_DRV", "Processing READ transaction", UVM_LOW)
 
     for (int i = 0; i < data_beats; i++) begin
-	@(vif.cb);
-        vif.cb.wait_state <= 0;
-        vif.data <= rsp.data[i]; 
-        `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%h", rsp.data[i]), UVM_LOW)
-	if(i==data_beats-1) @(vif.cb);
+      if (rsp.wait_state[i] == 1) begin
+	      vif.wait_state <= 1;
+	      @(posedge vif.clk);  // 1 cycle wait
+	      `uvm_info("SLV_DRV_WAIT", "Inserting 1 wait cycle", UVM_MEDIUM)
+      end
+	    vif.wait_state <= 0;
+      vif.data <= rsp.data[i];
+      `uvm_info("SLV_DRV_DATA", $sformatf("data[%0d]=%0h", i, rsp.data[i]), UVM_LOW)
+      @(posedge vif.clk);
     end
-    
     vif.data <= 'z; 
   endtask : drive_read_rsponse
 
