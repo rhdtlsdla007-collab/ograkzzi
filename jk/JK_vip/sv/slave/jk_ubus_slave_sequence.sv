@@ -18,7 +18,6 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
     int data_beats;
     forever begin
       p_sequencer.request_fifo.get(req);
-      //rsp.randomize();
 	 `uvm_info("SLAVE_SEQ", 
           $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
                     req.addr, req.size, req.read, req.write), UVM_MEDIUM)
@@ -26,10 +25,7 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
                rsp = jk_ubus_master_transfer::type_id::create("rsp");
       data_beats = size_to_beats(req.size);
       
-      rsp.randomize() with{
-	size == req.size;
-
-	};
+      rsp.randomize() with{size == req.size;};
 
       rsp.addr = req.addr;
       rsp.size = req.size;

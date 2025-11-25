@@ -27,7 +27,6 @@ function void write_master(jk_ubus_master_transfer trans);
     memory_verify_master(trans);
 endfunction
 
-// Master Monitor에서 오는 트랜잭션 처리
 protected function void memory_verify_master(jk_ubus_master_transfer trans);
     `uvm_info("SCOREBOARD", $sformatf("MASTER: read=%0d, write=%0d, addr=0x%0h, size=%0d", 
         trans.read, trans.write, trans.addr, trans.data.size()), UVM_MEDIUM)

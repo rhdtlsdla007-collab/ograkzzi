@@ -49,7 +49,6 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
       end
       vif.cb.wait_state <= rsp.wait_state[j];
       j++;
-          //vif.cb.wait_state <= 0;
       vif.data <= rsp.data[i]; 
       `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%h", rsp.data[i]), UVM_LOW)
       if(i==data_beats-1) @(vif.cb);
