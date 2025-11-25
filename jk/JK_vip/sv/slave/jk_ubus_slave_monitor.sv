@@ -48,7 +48,7 @@ class jk_ubus_slave_monitor extends uvm_monitor;
         req.read  = slave_if.read; // cb.read 대신 직접 접근
         req.write = slave_if.write; // cb.write 대신 직접 접근
         req.data  = new[data_size];
-        req.wait_state = new[data_size];
+       // req.wait_state = new[data_size];
         
         `uvm_info("SLAVE_MON", 
           $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
@@ -60,7 +60,7 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           for (int i = 0; i < data_size; i++) begin 
 		@(posedge slave_if.clk);
           req.data[i] = slave_if.data; 
-          req.wait_state[i] = slave_if.wait_state; 
+         // req.wait_state[i] = slave_if.wait_state; 
             `uvm_info("SLAVE_MON", $sformatf("Read [%0d]: wait=%0b, DATA=%0h", i, req.wait_state[i], req.data[i]), UVM_HIGH)
 	 if (i == data_size -1) item_collected_port.write(req);
         end
@@ -70,7 +70,7 @@ class jk_ubus_slave_monitor extends uvm_monitor;
           
           for (int i = 0; i < data_size; i++) begin
             req.data[i] = slave_if.data; 
-            req.wait_state[i] = slave_if.wait_state; 
+           // req.wait_state[i] = slave_if.wait_state; 
             
             `uvm_info("SLAVE_MON", 
               $sformatf("Write [%0d]: wait=%0b, DATA=%0h", 

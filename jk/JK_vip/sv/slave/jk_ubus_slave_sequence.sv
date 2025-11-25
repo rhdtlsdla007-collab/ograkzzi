@@ -18,23 +18,31 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
     int data_beats;
     forever begin
       p_sequencer.request_fifo.get(req);
+      //rsp.randomize();
 	 `uvm_info("SLAVE_SEQ", 
           $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
                     req.addr, req.size, req.read, req.write), UVM_MEDIUM)
 
                rsp = jk_ubus_master_transfer::type_id::create("rsp");
+      data_beats = size_to_beats(req.size);
+      
+      rsp.randomize() with{
+	size == req.size;
+
+	};
+
       rsp.addr = req.addr;
       rsp.size = req.size;
       rsp.read = req.read;
       rsp.write = req.write;
 
-      data_beats = size_to_beats(req.size);
-      rsp.data = new[data_beats];
+     // data_beats = size_to_beats(req.size);
+      //rsp.data = new[data_beats];
       rsp.error = 0;
-      rsp.wait_state = new[data_beats];
+      //rsp.wait_state = new[data_beats];
 
       for (int i = 0; i < data_beats; i++) begin
-        rsp.wait_state[i] = $urandom_range(0, 7);
+        //rsp.wait_state[i] = 1;
         if (req.write) begin
           m_mem[req.addr + i] = req.data[i];
           rsp.data[i] = req.data[i];
@@ -42,7 +50,9 @@ class jk_ubus_slave_sequence extends uvm_sequence #(jk_ubus_master_transfer);
                   req.addr, req.size, req.read, req.write, req.data[i]), UVM_MEDIUM)
           end
         if (req.read) begin
+        // ✅ 주석 제거하고 로직 수정
         if (m_mem.exists(req.addr + i)) begin
+        // 기존에 Write된 데이터 사용
         rsp.data[i] = m_mem[req.addr + i];
         `uvm_info("SLAVE_SEQ", 
             $sformatf("Read from memory: addr=0x%0h, data=0x%0h", 

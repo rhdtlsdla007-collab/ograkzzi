@@ -36,16 +36,14 @@ protected function void memory_verify_master(jk_ubus_master_transfer trans);
         int unsigned addr = trans.addr + i;
         int unsigned data = trans.data[i];  
         if (trans.write) begin
-            // Master가 Write를 보냄 → 예상 메모리에 저장
             m_mem_expected[addr] = data;
             num_writes++;
             `uvm_info("SCOREBOARD", 
                 $sformatf("MASTER Write: addr=0x%0h, data=0x%0h", addr, data), UVM_HIGH)
         end
         if (trans.read) begin
-                num_reads++; // Master Read 카운트
+                num_reads++;
                 if (m_mem_expected[addr] == data) 
-                    // begin ... end 블록으로 감싸서 가독성과 안전성을 높였습니다.
                         `uvm_info("SCOREBOARD", 
                             $sformatf("[MASTER] Read Check PASS: addr=0x%0h, data=0x%0h", addr, data), UVM_HIGH)
                      else begin

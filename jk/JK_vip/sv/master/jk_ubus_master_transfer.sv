@@ -22,20 +22,13 @@ class jk_ubus_master_transfer extends uvm_sequence_item;
 	(rw == 1'b0) -> write == 0;
 	(rw == 1'b1) -> write == 1;
  }
-
- constraint cst_state_time { 
-  foreach (wait_state[i]) {
-    wait_state[i] dist { 
-    0      :/ 50,   // 0 cycle: 50%
-    [1:2]  :/ 30,   // 1~2 cycle: 30%
-    [3:5]  :/ 10,   // 3~5 cycle: 10%
-    [6:7]  :/ 5,   // 6~7 cycle: 5%
-    [8:9]  :/ 4,
-    10     :/ 1
-    };
-  }
+ 
+ constraint limit_wait {
+	foreach (wait_state[i]) {
+	wait_state[i] dist {0:=50, 1:=50};
+	}
  }
-
+ 
  `uvm_object_utils_begin(jk_ubus_master_transfer)
 	`uvm_field_int(addr, UVM_DEFAULT)
 	`uvm_field_int(rw, UVM_DEFAULT)
@@ -49,6 +42,7 @@ class jk_ubus_master_transfer extends uvm_sequence_item;
 
  function new(string name = "jk_ubus_master_transfer");
 	super.new(name);
+	wait_state = new[100];
  endfunction 
 
 endclass : jk_ubus_master_transfer
