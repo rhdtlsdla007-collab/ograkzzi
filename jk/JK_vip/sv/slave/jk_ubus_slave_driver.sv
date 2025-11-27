@@ -41,17 +41,18 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     `uvm_info("SLV_DRV", "Processing READ transaction", UVM_LOW)
 
     for (int i = 0; i < data_beats; i++) begin
-      @(vif.cb);
-      vif.cb.wait_state <= rsp.wait_state[j];
-      while (rsp.wait_state[j]) begin
-        @(vif.cb);
-      j++;
-      end
-      vif.cb.wait_state <= rsp.wait_state[j];
-      j++;
-      vif.data <= rsp.data[i]; 
-      `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%h", rsp.data[i]), UVM_LOW)
-      if(i==data_beats-1) @(vif.cb);
+	@(vif.cb);
+	vif.cb.wait_state <= rsp.wait_state[j];
+	while (rsp.wait_state[j]) begin
+	@(vif.cb);
+	j++;
+	end
+	vif.cb.wait_state <= rsp.wait_state[j];
+	j++;
+        //vif.cb.wait_state <= 0;
+        vif.data <= rsp.data[i]; 
+        `uvm_info("SLV_DRV_DATA", $sformatf("rsp.data=%h", rsp.data[i]), UVM_LOW)
+	if(i==data_beats-1) @(vif.cb);
     end
    
     j = 0; 
@@ -65,12 +66,12 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
     //WRITE 응답 신호 구동
     //vif.cb.wait_state <= 0;
    for (int i = 0; i < data_beats; i++) begin
-		@(vif.cb);
-		vif.cb.wait_state <= rsp.wait_state[j];
-		while (rsp.wait_state[j]) begin
-		 @(vif.cb);
-		 j++;
- 		end
+	@(vif.cb);
+	vif.cb.wait_state <= rsp.wait_state[j];
+	while (rsp.wait_state[j]) begin
+	 @(vif.cb);
+	 j++;
+ 	end
 	vif.cb.wait_state <= rsp.wait_state[j];
     end
 

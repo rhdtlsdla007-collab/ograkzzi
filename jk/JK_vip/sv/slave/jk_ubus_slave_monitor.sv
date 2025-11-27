@@ -32,53 +32,65 @@ class jk_ubus_slave_monitor extends uvm_monitor;
       jk_ubus_master_transfer req;
       jk_ubus_master_transfer rsp;
       @(posedge slave_if.clk);
-      
+	while(slave_if.wait_state) @(slave_if.clk); 
       if ((slave_if.read || slave_if.write)) begin
 	      transaction_started = 1;
         req = new("req");
-        req.addr = slave_if.addr;
+        req.addr = slave_if.addr; // cb.addr 대신 직접 접근
         
-        case (slave_if.size)
+        case (slave_if.size) // cb.size 대신 직접 접근
           2'b00: begin req.size = 0; data_size = 1; end
           2'b01: begin req.size = 1; data_size = 2; end
           2'b10: begin req.size = 2; data_size = 4; end
           2'b11: begin req.size = 3; data_size = 8; end
         endcase
         
-        req.read  = slave_if.read;
-        req.write = slave_if.write;
+        req.read  = slave_if.read; // cb.read 대신 직접 접근
+        req.write = slave_if.write; // cb.write 대신 직접 접근
         req.data  = new[data_size];
-
+       // req.wait_state = new[data_size];
         
         `uvm_info("SLAVE_MON", 
           $sformatf(">>> 요청 감지 <<< addr=0x%0h size=%0d read=%0b write=%0b", 
                     req.addr, req.size, req.read, req.write), UVM_MEDIUM)
         
         if (req.read) begin
-          request_aport.write(req);
+	        request_aport.write(req);
+          
           for (int i = 0; i < data_size; i++) begin
-            while(slave_if.wait_state) @(posedge slave_if.clk);
-		        @(posedge slave_if.clk);
-          req.data[i] = slave_if.data;
-            `uvm_info("SLAVE_MON", $sformatf("Read [%0d]: DATA=%0h", i, req.data[i]), UVM_HIGH)
-	        if (i == data_size -1) item_collected_port.write(req);
+		@(posedge slave_if.clk); 
+	//	while(slave_if.wait_state) @(slave_if.clk);
+	//	wait(!slave_if.wait_state);				
+          	for (int j = 0; j<100; j++) begin
+			if (slave_if.wait_state) @(slave_if.clk);
+			else if (j == 0) break;
+			else if (j != 0) begin @(slave_if.clk); break; end
+		end
+		req.data[i] = slave_if.data;
+            `uvm_info("SLAVE_MON", $sformatf("Read [%0d]: wait=%0b, DATA=%0h", i, req.wait_state[i], req.data[i]), UVM_HIGH)
+	 if (i == data_size -1) item_collected_port.write(req);
         end
       end
         else if (req.write) begin
-	        @(posedge slave_if.clk);  
-          
+         // @(posedge slave_if.clk);  
+        
           for (int i = 0; i < data_size; i++) begin
+		@(posedge slave_if.clk);
+		for (int j = 0; j<100; j++) begin
+			if (slave_if.wait_state) @(slave_if.clk);
+			else if (j == 0) break;
+			else if (j != 0) begin @(slave_if.clk); break; end
+		end
+		//while(slave_if.wait_state) @(slave_if.clk);
             req.data[i] = slave_if.data; 
-            request_aport.write(req);
-            
-            while(slave_if.wait_state) @(posedge slave_if.clk);
-            
             `uvm_info("SLAVE_MON", 
-              $sformatf("Write [%0d]: DATA=%0h", 
-                        i, req.data[i]), UVM_MEDIUM)
-            if (i < data_size - 1) @(posedge slave_if.clk);
+              $sformatf("Write [%0d]: wait=%0b, DATA=%0h", 
+                        i, req.wait_state[i], req.data[i]), UVM_MEDIUM)
+          
+            //if (i < data_size - 1) @(posedge slave_if.clk); 
           end
-		      item_collected_port.write(req);
+		item_collected_port.write(req);
+		      request_aport.write(req);
         end
         req.error = slave_if.error; 
         

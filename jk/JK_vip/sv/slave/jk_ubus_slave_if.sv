@@ -11,7 +11,7 @@ interface jk_ubus_slave_if ();
     logic clk;
     
     clocking cb @(posedge clk);
-        default input #1ns output #1ns;
+        default input #1ns; //output #1ns;
         input read, write, bip, addr, size, reset;
         output error, wait_state; 
     endclocking 

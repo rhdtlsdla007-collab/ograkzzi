@@ -27,6 +27,7 @@ function void write_master(jk_ubus_master_transfer trans);
     memory_verify_master(trans);
 endfunction
 
+// Master Monitor에서 오는 트랜잭션 처리
 protected function void memory_verify_master(jk_ubus_master_transfer trans);
     `uvm_info("SCOREBOARD", $sformatf("MASTER: read=%0d, write=%0d, addr=0x%0h, size=%0d", 
         trans.read, trans.write, trans.addr, trans.data.size()), UVM_MEDIUM)
@@ -35,14 +36,16 @@ protected function void memory_verify_master(jk_ubus_master_transfer trans);
         int unsigned addr = trans.addr + i;
         int unsigned data = trans.data[i];  
         if (trans.write) begin
+            // Master가 Write를 보냄 → 예상 메모리에 저장
             m_mem_expected[addr] = data;
             num_writes++;
             `uvm_info("SCOREBOARD", 
                 $sformatf("MASTER Write: addr=0x%0h, data=0x%0h", addr, data), UVM_HIGH)
         end
         if (trans.read) begin
-                num_reads++;
+                num_reads++; // Master Read 카운트
                 if (m_mem_expected[addr] == data) 
+                    // begin ... end 블록으로 감싸서 가독성과 안전성을 높였습니다.
                         `uvm_info("SCOREBOARD", 
                             $sformatf("[MASTER] Read Check PASS: addr=0x%0h, data=0x%0h", addr, data), UVM_HIGH)
                      else begin
