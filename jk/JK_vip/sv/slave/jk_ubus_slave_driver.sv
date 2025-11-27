@@ -24,7 +24,10 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
       jk_ubus_master_transfer rsp;
       seq_item_port.get_next_item(rsp);
  	    item_collected_port.write(rsp);
-      if (rsp.read) begin
+      if (rsp.error) begin
+        drive_error_response(rsp);
+      end
+      else if (rsp.read) begin
         drive_read_rsponse(rsp);
         `uvm_info("slave 드라이버 ", $sformatf("DRV rsp.read=%0d", rsp.read), UVM_LOW)
       end
@@ -81,6 +84,14 @@ class jk_ubus_slave_driver extends uvm_driver #(jk_ubus_master_transfer);
   //신호해제
   j = 0;
   vif.cb.error <= 'z;
+  endtask
+
+  virtual protected task drive_error_response(jk_ubus_master_transfer rsp);
+    `uvm_info("SLV_DRV", "Processing ERROR transaction", UVM_LOW)
+    @(vif.cb);
+    vif.cb.error <= 1;
+    @(vif.cb);
+    vif.cb.error <= 0;
   endtask
   
   function automatic int unsigned size_to_beats(bit [1:0] size_value);
